@@ -1,6 +1,9 @@
 const FIRST_COLUM_REC_WIDTH_OFFSET = 20
 const FIRST_ROW_REC_HEIGHT_OFFSET = 20
 
+const denovi = ["Ponedelnik", "Vtornik", "Sreda", "Cetvrtok", "Petok"]
+const saati = ["8:00-8:45", "8:00-8:45", "8:00-8:45", "8:00-8:45", "8:00-8:45", "8:00-8:45", "8:00-8:45"]
+
 function labelCenterOfRect(text, rectX, rectY, rw, rh, fontSize, ctx){
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
@@ -27,23 +30,25 @@ function onLoad(){
     rectHeight = canvasHeight/13 //we make a new rect height from the canvas size we have left
     //
 
-    //this is for the first row of rectangles
+    //this is for the first colum of rectangles
     for(let i = firstRowRecHeight;i < canvas.height;i+=rectHeight){
         ctx.beginPath()
         ctx.rect(0,i,firstColumRecWidth,rectHeight)
+        let text = Math.floor(((i-firstRowRecHeight)/rectHeight) + 8) + ":00 - " + Math.floor(((i-firstRowRecHeight)/rectHeight) + 8) + ":45"
+        labelCenterOfRect(text,0,i,firstColumRecWidth,rectHeight,15,ctx)
         ctx.stroke()
     }
     canvasWidth-=firstColumRecWidth//we take out the first col rect width from the canvas width so that we know how much width we have left
     rectWidth = canvasWidth/5 // we make a new rect width from the canvas we have left
     //
 
-    //this is for the first colum of rectangles
+    //this is for the first row of rectangles
     for(let i = firstColumRecWidth;i < canvas.width;i+=rectWidth){
         ctx.beginPath()
         ctx.rect(i,0,rectWidth,firstRowRecHeight)
+        labelCenterOfRect(denovi[(i - firstColumRecWidth)/rectWidth],i,0,rectWidth,firstRowRecHeight,20,ctx)
         ctx.stroke()
     }
-    labelCenterOfRect("Ponedelnik",firstColumRecWidth,0,rectWidth,firstRowRecHeight,25,ctx)
     ctx.stroke()
     //we removed the height previously with the first top right rect
     //
