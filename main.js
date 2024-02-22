@@ -1,12 +1,12 @@
 const FIRST_COLUM_REC_WIDTH_OFFSET = 20
 const FIRST_ROW_REC_HEIGHT_OFFSET = 20
-const MINUTES_IN_TABLE = 765
-
-const denovi = ["Ponedelnik", "Vtornik", "Sreda", "Cetvrtok", "Petok"]
+const MINUTES_IN_TABLE = 780
 
 //COLORS
 const LIGHT_BLUE = "#ADD8E6"
 //
+
+const denovi = ["Ponedelnik", "Vtornik", "Sreda", "Cetvrtok", "Petok"]
 
 
 let canvas = document.getElementById("canvas")
@@ -28,16 +28,7 @@ function labelCenterOfRect(text, rectX, rectY, rw, rh, fontSize){
     ctx.fillText(text,rectX+(rw/2), rectY+(rh/2))
 }
 
-function drawEvent(rectX,rectY,w,h,places = 1,color = LIGHT_BLUE){
-    ctx.beginPath()
-    ctx.globalAlpha = 0.8
-    ctx.fillStyle = color
-    ctx.rect(firstColumRecWidth + rectWidth * rectX,firstRowRecHeight + rectHeight * rectY,w,h*places)
-    ctx.fill()
-    ctx.stroke()
-}
-
-function drawSpecificEvent(rectX,rectY,w,h,color = LIGHT_BLUE){
+function drawEvent(rectX,rectY,w,h,color = LIGHT_BLUE){
     ctx.beginPath()
     ctx.globalAlpha = 0.8
     ctx.fillStyle = color
@@ -46,7 +37,7 @@ function drawSpecificEvent(rectX,rectY,w,h,color = LIGHT_BLUE){
     ctx.stroke()
 }
 
-function timeToPlaceInTable(hour1,min1,hour2,min2){
+function timeToPlaceInTable(hour1,min1,hour2,min2,state){
     const pixel = canvasHeight / MINUTES_IN_TABLE
     hour1 -= 8
     hour2 -= 8
@@ -54,9 +45,12 @@ function timeToPlaceInTable(hour1,min1,hour2,min2){
     let minutes2 = (hour2*60)+min2
     minutes1 *= pixel
     minutes2 *= pixel
-    let rectY = minutes1 + firstRowRecHeight
-    let rh = minutes2 + firstRowRecHeight
-    return [rectY, rh]
+    if(state === 0){
+        return minutes1 + firstRowRecHeight
+    }
+    if(state === 1){
+        return  (minutes2 + firstRowRecHeight) - (minutes1 + firstRowRecHeight)
+    }
 }
 
 
@@ -74,7 +68,7 @@ function onLoad(){
     for(let i = firstRowRecHeight;i < canvas.height;i+=rectHeight){
         ctx.beginPath()
         ctx.rect(0,i,firstColumRecWidth,rectHeight)
-        let text = Math.floor(((i-firstRowRecHeight)/rectHeight) + 8) + ":00 - " + Math.floor(((i-firstRowRecHeight)/rectHeight) + 8) + ":45"
+        let text = Math.floor(((i-firstRowRecHeight)/rectHeight) + 8) + ":00 - " + Math.floor(((i-firstRowRecHeight)/rectHeight) + 9) + ":00"
         labelCenterOfRect(text,0,i,firstColumRecWidth,rectHeight,15)
         ctx.stroke()
     }
@@ -103,14 +97,6 @@ function onLoad(){
     }
     //
 
-    //drawEvent(0,0,rectWidth,rectHeight,1)
-    drawEvent(1,1,rectWidth,rectHeight,2)
-    labelCenterOfRect("HELLO",firstColumRecWidth + rectWidth,firstRowRecHeight + rectHeight,rectWidth,rectHeight * 2,25)
-
-    drawEvent(3,0,rectWidth,rectHeight,2)
-    labelCenterOfRect("Objektno-orientirano programiranje",firstColumRecWidth + rectWidth * 3,firstRowRecHeight,rectWidth,rectHeight * 2,25)
-
-    drawSpecificEvent(firstColumRecWidth,timeToPlaceInTable(9,23,10,45)[0],rectWidth,timeToPlaceInTable(9,23,10,45)[1])
-    drawSpecificEvent(firstColumRecWidth,timeToPlaceInTable(12,23,10,45)[0],rectWidth,timeToPlaceInTable(12,23,10,45)[1])
-    labelCenterOfRect("Matematika 2",firstColumRecWidth,timeToPlaceInTable(9,23,10,45)[0],rectWidth,timeToPlaceInTable(9,0,10,45)[1],25)
+    drawEvent(firstColumRecWidth,timeToPlaceInTable(13,0,15,0,0),rectWidth,timeToPlaceInTable(13,0,15,0,1))
+    labelCenterOfRect("Mat 1",firstColumRecWidth,timeToPlaceInTable(13,0,15,0,0),rectWidth,timeToPlaceInTable(13,0,15,0,1),25)
 }
