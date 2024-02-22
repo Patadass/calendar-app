@@ -1,0 +1,5 @@
+Step 1. Create the db -> "create database :dbname:";
+Step 2. Select the created db -> "use :dbname:";
+Step 3. Create the Users table ->  "create table Users(UserID int,Username varchar(255),Password varchar(255),primary key (UserID));" ;
+Step 4. Create the Events table -> "create table Events(UserID int,Start_H int,Start_M int,End_H int,End_M int,Event_Content varchar(255),Event_Color varchar(255),foreign key (UserID) references Users(UserID),Day int);";
+
