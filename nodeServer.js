@@ -47,7 +47,7 @@ app.get("/getEvents",(req,response)=>{
             })
     
             response.json(events_Array);
-    
+            events_Array=[];
         });
     });
     
