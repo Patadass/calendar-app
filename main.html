@@ -6,7 +6,35 @@
     <title>Title</title>
 </head>
 <body onload="onLoad()">
-<canvas id="canvas" width="1500" height="800" style="border: 1px solid #000000"></canvas>
+<div id = "canvasDiv">
+    <canvas id="canvas" width="1500" height="800" style="border: 1px solid #000000"></canvas>
+</div>
+<button id="btnPonedelnik" name = "Ponedelnik">Ponedelnik</button>
+<button id="btnVtornik" name = "Vtornik">Vtornik</button>
+<button id="btnSreda" name = "Sreda">Sreda</button>
+<button id="btnCetvrtok" name = "Cetvrtok">Cetvrtok</button>
+<button id="btnPetok" name = "Petok">Petok</button><br>
+<p>From</p>
+
+<input id="txtInputFromHr" type="text" placeholder="hr">
+<p1>:</p1>
+<input id="txtInputFromMin" type="text" placeholder="min">
+<p id="disclaimerFromHr"></p>
+<p id="disclaimerFromMin"></p>
+
+
+<p>To</p>
+<input id="txtInputToHr" type="text" placeholder="hr">
+<p1>:</p1>
+<input id="txtInputToMin" type="text" placeholder="min">
+<p id="disclaimerToHr"></p>
+<p id="disclaimerToMin"></p>
+<input id="txtInputLabel" type="text" placeholder="label">
+<button id="btnEventSubmit">Add Event</button>
+
+
+
+
 <script src="main.js"></script>
 </body>
 </html>

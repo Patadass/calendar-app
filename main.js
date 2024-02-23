@@ -54,6 +54,106 @@ function timeToPlaceInTable(hour1,min1,hour2,min2,state){
 }
 
 
+document.getElementById("btnPonedelnik").addEventListener("click",getDayOfWeek)
+document.getElementById("btnVtornik").addEventListener("click",getDayOfWeek)
+document.getElementById("btnSreda").addEventListener("click",getDayOfWeek)
+document.getElementById("btnCetvrtok").addEventListener("click",getDayOfWeek)
+document.getElementById("btnPetok").addEventListener("click",getDayOfWeek)
+
+let izbranDen = -1
+function getDayOfWeek(){
+    document.getElementById("btnPonedelnik").disabled = false
+    document.getElementById("btnVtornik").disabled = false
+    document.getElementById("btnSreda").disabled = false
+    document.getElementById("btnCetvrtok").disabled = false
+    document.getElementById("btnPetok").disabled = false
+    let daysOfWeek = 5
+    for(let i = 0;i < daysOfWeek;i++){
+        if(denovi[i] === this.name){
+            izbranDen = i
+        }
+    }
+    this.disabled = true
+}
+
+document.getElementById("txtInputFromHr").addEventListener('input',handleInput)
+document.getElementById("txtInputFromHr").addEventListener('propertychange',handleInput)
+document.getElementById("txtInputFromMin").addEventListener('input',handleInput)
+document.getElementById("txtInputFromMin").addEventListener('propertychange',handleInput)
+document.getElementById("txtInputToHr").addEventListener('input',handleInput)
+document.getElementById("txtInputToHr").addEventListener('propertychange',handleInput)
+document.getElementById("txtInputToMin").addEventListener('input',handleInput)
+document.getElementById("txtInputToMin").addEventListener('propertychange',handleInput)
+
+function handleInput(e){
+    let text = e.target.value
+    if(text.length <= 0){
+        return
+    }
+    let i = text.length
+    if(text[i-1].match(/[a-z]/i)){
+       e.target.value = e.target.value.slice(0, -1)
+    }
+    if(i === 2){
+        if(e.target.id === "txtInputFromHr"){
+            if(parseInt(text) > 21 || parseInt(text) < 8){
+                document.getElementById("disclaimerFromHr").innerText = text + " is not a valid hour"
+                e.target.value = ""
+                return;
+            }
+            document.getElementById("disclaimerFromHr").innerText = ""
+            document.getElementById("txtInputFromMin").focus()
+        }
+        if(e.target.id === "txtInputFromMin"){
+            if(parseInt(text) >= 60){
+                document.getElementById("disclaimerFromMin").innerText = text + " is not a valid number of minutes"
+                e.target.value = ""
+                return;
+            }
+            document.getElementById("disclaimerFromMin").innerText = ""
+            document.getElementById("txtInputToHr").focus()
+        }
+        if(e.target.id === "txtInputToHr"){
+            if(parseInt(text) > 21 || parseInt(text) < 8){
+                document.getElementById("disclaimerToHr").innerText = text + " is not a valid hour"
+                e.target.value = ""
+                return;
+            }
+            document.getElementById("disclaimerToHr").innerText = ""
+            document.getElementById("txtInputToMin").focus()
+        }
+        if(e.target.id === "txtInputToMin"){
+            if(parseInt(text) >= 60){
+                document.getElementById("disclaimerToMin").innerText = text + " is not a valid hour"
+                e.target.value = ""
+                return;
+            }
+            document.getElementById("disclaimerToMin").innerText = ""
+            document.getElementById("txtInputToMin").focus()
+        }
+    }
+    if(i === 3){
+        e.target.value = e.target.value.slice(0, -1)
+    }
+}
+
+document.getElementById("btnEventSubmit").addEventListener("click", submitEvent)
+
+function submitEvent(){
+    if(izbranDen === -1){
+        return
+    }
+
+    let hour1 = parseInt(document.getElementById("txtInputFromHr").value)
+    let min1 = parseInt(document.getElementById("txtInputFromMin").value)
+    let hour2 = parseInt(document.getElementById("txtInputToHr").value)
+    let min2 = parseInt(document.getElementById("txtInputToMin").value)
+    let text = document.getElementById("txtInputLabel").value
+    console.log(hour1,min1,hour2,min2,izbranDen)
+    drawEvent(firstColumRecWidth + (rectWidth*izbranDen),timeToPlaceInTable(hour1,min1,hour2,min2,0),rectWidth,timeToPlaceInTable(hour1,min1,hour2,min2,1))
+    labelCenterOfRect(text,firstColumRecWidth + (rectWidth*izbranDen),timeToPlaceInTable(hour1,min1,hour2,min2,0),rectWidth,timeToPlaceInTable(hour1,min1,hour2,min2,1),25)
+}
+
 function onLoad(){
     //this it only for top left rect
     ctx.beginPath()
@@ -97,6 +197,6 @@ function onLoad(){
     }
     //
 
-    drawEvent(firstColumRecWidth,timeToPlaceInTable(13,0,15,0,0),rectWidth,timeToPlaceInTable(13,0,15,0,1))
-    labelCenterOfRect("Mat 1",firstColumRecWidth,timeToPlaceInTable(13,0,15,0,0),rectWidth,timeToPlaceInTable(13,0,15,0,1),25)
+    //drawEvent(firstColumRecWidth,timeToPlaceInTable(13,0,15,0,0),rectWidth,timeToPlaceInTable(13,0,15,0,1))
+    //labelCenterOfRect("Mat 1",firstColumRecWidth,timeToPlaceInTable(13,0,15,0,0),rectWidth,timeToPlaceInTable(13,0,15,0,1),25)
 }
