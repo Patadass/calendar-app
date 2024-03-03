@@ -4,9 +4,54 @@
 
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body onload="onLoad()">
-<canvas id="canvas" width="1500" height="800" style="border: 1px solid #000000"></canvas>
+<div id = "canvasDiv">
+    <canvas id="canvas" width="1500" height="800" style="border: 1px solid #000000"></canvas>
+</div>
+<div class="addEventModal">
+    <button id="closeAddModalButton">Close</button>
+    <div class="buttonGroupContainer">
+        <button class="daysBtn"id="btnPonedelnik" name = "Ponedelnik">Ponedelnik</button>
+        <button class="daysBtn"id="btnVtornik" name = "Vtornik">Vtornik</button>
+        <button class="daysBtn"id="btnSreda" name = "Sreda">Sreda</button>
+        <button class="daysBtn"id="btnCetvrtok" name = "Cetvrtok">Cetvrtok</button>
+        <button class="daysBtn"id="btnPetok" name = "Petok">Petok</button>
+    </div>
+    <br>
+    <p>From</p>
+
+    <div class="fromContainer">
+        <input id="txtInputFromHr" type="number" placeholder="hr">
+        <p1><strong>:</strong></p1>
+        <input id="txtInputFromMin" type="number" placeholder="min">
+    </div>
+    <p id="disclaimerFromHr"></p>
+    <p id="disclaimerFromMin"></p>
+    <p>To</p>
+    <div class="toContainer">
+    
+        <input id="txtInputToHr" type="number" placeholder="hr">
+        <p1>:</p1>
+        <input id="txtInputToMin" type="number" placeholder="min">
+    </div>
+
+        <p id="disclaimerToHr"></p>
+        <p id="disclaimerToMin"></p>
+    <input id="txtInputLabel" type="text" placeholder="label">
+    <button id="btnEventSubmit">Post event</button>
+
+</div>
+<div class="editEventModal">
+    <button id="closeEditModalButton">Close</button>
+    <div id="eventsContainer">
+            
+    </div>
+</div>
+<button id="addEventBtn">Add Event</button>
+<button id="editEventBtn">Edit Events</button>
 <script src="main.js"></script>
+
 </body>
 </html>

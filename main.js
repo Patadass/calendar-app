@@ -8,19 +8,7 @@ const LIGHT_BLUE = "#ADD8E6"
 
 const denovi = ["Ponedelnik", "Vtornik", "Sreda", "Cetvrtok", "Petok"]
 
-var xhttp = new XMLHttpRequest();
-xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-       // Typical action to be performed when the document is ready:
-       let resp = JSON.parse(this.response);
-       resp.map((e)=>{
-        drawEvent(firstColumRecWidth+(rectWidth*e.day),timeToPlaceInTable(e.start_h,e.start_m,e.end_h,e.end_m,0),rectWidth,timeToPlaceInTable(e.start_h,e.start_m,e.end_h,e.end_m,1));
-        labelCenterOfRect(e.event_content,firstColumRecWidth+(rectWidth*e.day),timeToPlaceInTable(e.start_h,e.start_m,e.end_h,e.end_m,0),rectWidth,timeToPlaceInTable(e.start_h,e.start_m,e.end_h,e.end_m,1),25)
-       })
-    }
-};
-xhttp.open("GET", "http://localhost:8008/getEvents", true);
-xhttp.send();
+let events=[];
 
 
 let canvas = document.getElementById("canvas")
@@ -69,6 +57,14 @@ function timeToPlaceInTable(hour1,min1,hour2,min2,state){
 
 
 function onLoad(){
+    
+    canvasHeight = canvas.height
+    canvasWidth = canvas.width
+    rectHeight = canvasHeight/14
+    rectWidth = canvasWidth/5
+    firstColumRecWidth = rectWidth/2 + FIRST_COLUM_REC_WIDTH_OFFSET
+    firstRowRecHeight = rectHeight + FIRST_ROW_REC_HEIGHT_OFFSET
+    ctx.clearRect(0,0,canvas.width,canvas.height);
     //this it only for top left rect
     ctx.beginPath()
     ctx.rect(0,0,firstColumRecWidth,firstRowRecHeight)
@@ -100,7 +96,7 @@ function onLoad(){
     ctx.stroke()
     //we removed the height previously with the first top right rect
     //
-
+    
     //rest of the rects
     for(let i = firstRowRecHeight;i < canvas.height;i+=rectHeight){
         for(let j = firstColumRecWidth;j < canvas.width;j+=rectWidth){
@@ -110,6 +106,207 @@ function onLoad(){
         }
     }
     //
+var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       // Typical action to be performed when the document is ready:
+       
+       let resp = JSON.parse(this.response);
+       events=resp;
+       events.sort(compare);
+       resp.map((e)=>{
+        drawEvent(firstColumRecWidth+(rectWidth*e.day),timeToPlaceInTable(e.start_h,e.start_m,e.end_h,e.end_m,0),rectWidth,timeToPlaceInTable(e.start_h,e.start_m,e.end_h,e.end_m,1));
+        labelCenterOfRect(e.event_content,firstColumRecWidth+(rectWidth*e.day),timeToPlaceInTable(e.start_h,e.start_m,e.end_h,e.end_m,0),rectWidth,timeToPlaceInTable(e.start_h,e.start_m,e.end_h,e.end_m,1),25)
+       })
+    }
+};
+xhttp.open("GET", "http://localhost:8008/getEvents", true);
+xhttp.send();
 
     
 }
+
+const map = new Map(); //A map for storing the days (as strings) mapped to numbers
+map.set("Ponedelnik",0);
+map.set("Vtornik",1);
+map.set("Sreda",2);
+map.set("Cetvrtok",3);
+map.set("Petok",4);
+
+
+let activeButtonText="";
+let btnsArr =document.querySelectorAll(".daysBtn");
+btnsArr= Array.from(btnsArr);
+console.log(btnsArr);
+btnsArr.forEach((e)=>{
+    e.addEventListener("click",changeButton);
+})
+function changeButton(e){
+    console.log(e.target.textContent);
+    activeButtonText=e.target.textContent;
+    btnsArr.forEach((e)=>{
+        if(e.textContent!==activeButtonText){
+            e.classList="daysBtn";
+        }else{
+            e.classList="daysBtnActive";
+        }
+    })
+}
+
+let addEventBtn = document.querySelector("#addEventBtn");
+addEventBtn.addEventListener("click",()=>{
+        document.querySelector(".addEventModal").style.display="block";
+        setTimeout(()=>{
+        document.querySelector(".addEventModal").style.top="50%";    
+        },200);
+    
+});
+
+let postEventBtn=document.querySelector("#btnEventSubmit");
+let e1=document.querySelector("#txtInputFromHr");
+let e2=document.querySelector("#txtInputFromMin");
+let e3=document.querySelector("#txtInputToHr");
+let e4=document.querySelector("#txtInputToMin");
+let e5=document.querySelector("#txtInputLabel");
+postEventBtn.addEventListener("click",()=>{
+    if(e1.value.trim()==""||e2.value.trim()==""||e3.value.trim()==""||e4.value.trim()==""||e5.value.trim()==""){
+        alert("EMPTY FIELDS");
+    }
+    else{
+        if((e1.value<8 ||e1.value>21)||(e3.value<8 ||e3.value>21)||(e2.value<0 ||e2.value>59)||(e4.value<0 ||e4.value>59)){
+            alert(" ENTER A VALID TIME INTERVAL ");
+        }else{
+            var http = new XMLHttpRequest();
+            var url = 'http://localhost:8008/postEvent';
+            var params =JSON.stringify( {
+                userID:0,
+                start_h:e1.value,
+                start_m:e2.value,
+                end_h:e3.value,
+                end_m:e4.value,
+                event_content:e5.value,
+                event_color:"#ADD8E6",
+                day:map.get(document.querySelector(".daysBtnActive").textContent)
+            });
+            http.open('POST', url, true);
+            http.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
+
+
+            //Send the proper header information along with the request
+            
+            http.onload = function() {//Call a function when the state changes.
+            if(http.readyState == 4 && http.status == 200) {
+                onload();
+               
+            }else{
+                window.location.href = "http://localhost:8008/login";
+            }
+        }
+            http.send(params);
+            document.querySelector(".addEventModal").style.top="150%";
+            setTimeout(()=>{
+            document.querySelector(".addEventModal").style.display="none";
+            },500)
+        }
+        
+    }
+    
+    
+})
+
+function compare(a,b){
+    if(a.day >b.day){
+        return 1;
+    }
+    if(a.day <b.day){
+        return -1;
+    }
+    return 0;
+}
+
+let editBtn = document.querySelector("#editEventBtn");
+let template = `
+    <div class="event">
+        <h1></h1>
+    </div>
+
+`
+editBtn.addEventListener("click",function(){
+    document.querySelector(".editEventModal").style.display="block";    
+    setTimeout(()=>{
+        document.querySelector(".editEventModal").style.top="50%";
+        },200);
+    
+    doSometing();
+})
+
+function deleteEventButton(e){
+    console.log(events[e.target.parentElement.getAttribute("id")]);
+    
+    console.log(events);
+    let http = new XMLHttpRequest();
+    http.open('POST', "http://localhost:8008/deleteEvent", false);
+            http.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+            //Send the proper header information along with the request
+            http.onload = function() {//Call a function when the state changes.
+            if(http.readyState == 4 && http.status == 200) {
+                events.splice(e.target.parentElement.getAttribute("id"),1);
+                console.log("Event id "+ e.target.parentElement.getAttribute("id"));
+                doSometing();
+                e.target.parentElement.remove();
+                console.log(events);
+                onLoad();
+            }else{
+                window.location.href = "http://localhost:8008/login";
+            }
+        }
+    http.send(JSON.stringify(events[e.target.parentElement.getAttribute("id")]));    
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+function doSometing(){
+    document.querySelector("#eventsContainer").innerHTML="";
+    events.map((e,index)=>{
+        template = `
+    <div class="event" id="${index}">
+        <h1>${denovi[e.day]}</h1>
+        <p>${e.event_content}</p>
+        <h3>From ${e.start_h}:${e.start_m} To ${e.end_h}:${e.end_m}</h3>
+        <button class="deleteBtn">Delete</button>
+    </div>
+
+`
+        document.querySelector("#eventsContainer").insertAdjacentHTML("beforeend",template);
+    });
+    let btnARR =document.querySelectorAll(".deleteBtn");
+    btnARR = Array.from(btnARR);
+    btnARR.forEach((e)=>{
+        e.addEventListener("click",deleteEventButton);
+    })
+}
+
+document.querySelector("#closeAddModalButton").addEventListener("click",(e)=>{
+    document.querySelector(".addEventModal").style.top="150%";
+    setTimeout(()=>{
+        
+        document.querySelector(".addEventModal").style.display="none";    
+        },200);
+});
+
+document.querySelector("#closeEditModalButton").addEventListener("click",(e)=>{
+    document.querySelector(".editEventModal").style.top="150%";
+    setTimeout(()=>{
+        
+        document.querySelector(".editEventModal").style.display="none";    
+        },200);
+});
