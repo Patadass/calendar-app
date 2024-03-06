@@ -112,7 +112,13 @@ xhttp.onreadystatechange = function() {
        // Typical action to be performed when the document is ready:
        
        let resp = JSON.parse(this.response);
-       events=resp;
+       events=resp
+       document.querySelector("#userName").textContent+=resp[0];
+       console.log(resp);
+       console.log("Before shift!");
+       resp.shift();
+       console.log(resp);
+       console.log("After shift!")
        events.sort(compare);
        resp.map((e)=>{
         drawEvent(firstColumRecWidth+(rectWidth*e.day),timeToPlaceInTable(e.start_h,e.start_m,e.end_h,e.end_m,0),rectWidth,timeToPlaceInTable(e.start_h,e.start_m,e.end_h,e.end_m,1));
@@ -310,3 +316,20 @@ document.querySelector("#closeEditModalButton").addEventListener("click",(e)=>{
         document.querySelector(".editEventModal").style.display="none";    
         },200);
 });
+
+
+
+let logOutButton = document.querySelector("#logOutBtn");
+logOutButton.addEventListener("click",logout);
+
+function logout(){
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+       // Typical action to be performed when the document is ready:
+            window.location.href = "http://localhost:8008/login";
+        }
+    };
+    xhttp.open("GET", "http://localhost:8008/logOut", true);
+    xhttp.send();
+}

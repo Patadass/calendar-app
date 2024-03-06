@@ -5,6 +5,9 @@ const session = require("express-session");
 const app = express();
 const port = 8008;
 
+const sessionStore= new Map();
+
+
 app.use(session({
     secret:"some secret",
     cookie: {maxAge:600000},
@@ -38,7 +41,6 @@ const { dir } = require("console");
 const { dirname } = require("path");
 const { allowedNodeEnvironmentFlags } = require("process");
 
-
 let events_Array= [];
 app.use(cors());
 app.use(bodyParser.json());
@@ -57,6 +59,8 @@ app.get("/login",(req,res)=>{
 app.get("/",(req,res)=>{
     if(req.session.authenticated){
         res.sendFile(path.join(__dirname+"/main.html"));
+        
+        console.log(req.session.user.username+" The current active user");
     }else{
         res.status(400);
         res.redirect("/login");
@@ -65,7 +69,7 @@ app.get("/",(req,res)=>{
 })
 app.get("/getEvents",(req,response)=>{
     if(req.session.authenticated){
-        console.log(req.session.user.userID);
+        events_Array.push(req.session.user.username);
         pool.getConnection((connErr,connection)=>{
         if(connErr){
             console.error("Error");
@@ -78,7 +82,7 @@ app.get("/getEvents",(req,response)=>{
                 events_Array.push(new Event(row.UserID,row.Start_H,row.Start_M,row.End_H,row.End_M,row.Event_Content,row.Event_Color,row.Day));
                 
             })
-    
+            
             response.json(events_Array);
             events_Array=[];
         });
@@ -155,6 +159,8 @@ app.post("/login",(req,respon)=>{
                 });
                 req.session.authenticated = true;
                 req.session.user =ob;
+                sessionStore.set(req.session);
+                console.log(sessionStore);
                 respon.send();
                 
             };
@@ -169,7 +175,17 @@ app.get("/style.css",(req,res)=>{
 app.get("/main.js",(req ,res)=>{
     res.sendFile(path.join(__dirname+"/main.js"));
 })
-
+app.get("/logOut",(req,res)=>{
+        if(req.session.authenticated){
+            req.session.authenticated=false;
+            req.session.destroy();
+            
+            res.redirect("/");
+        }else{
+            res.redirect("/");
+        }
+        
+})
 
 
 
